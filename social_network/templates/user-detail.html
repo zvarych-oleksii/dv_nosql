@@ -95,6 +95,31 @@
           </div>
         {% endif %}
       {% endif %}
+
+
+      
+      <!--Відображення найкоротшого шляху-->
+      <div class="row mt-4">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Shortest Path to {{ object.username }}</h5>
+              {% if shortest_path_nodes %}
+                {% for node in shortest_path_nodes %}
+                  <p class="card-text">
+                    Node: {{ node.properties.username }} ({{ node.properties.userId }})
+                  </p>
+                {% endfor %}
+              {% else %}
+                <p class="card-text">No path found.</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+
     <div style='margin-top:20px' class="card mb-4">
           <div class="card-body">
             {% for post in posts %}

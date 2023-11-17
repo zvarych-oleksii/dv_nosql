@@ -112,10 +112,24 @@ class CustomUserDetailView(DetailView):
                 context['requests'] = FriendShipRelations.objects.filter(
                         Q(receiverId=user.userId)&
                         Q(status='pending')
-                        )
-
-        
+                )
             context['friend_request_exists'] = has_relationship
+
+
+
+        #Пошук найкоротшого шляху та передавання його на FrontEnd
+        if self.request.user.is_authenticated and self.request.user != user:
+            auth_user_node = CustomUserNode.nodes.get(userId=str(self.request.user.userId))
+            viewed_user_node = CustomUserNode.nodes.get(userId=str(user.userId))
+
+            shortest_path = db.cypher_query(
+                "MATCH p=shortestPath((a:CustomUserNode {userId: $authUserId})-[*]-(b:CustomUserNode {userId: $viewedUserId})) RETURN p",
+                {"authUserId": auth_user_node.userId, "viewedUserId": viewed_user_node.userId},
+            )
+
+            nodes = shortest_path[0][0].nodes if shortest_path else []
+            context['shortest_path_nodes'] = nodes
+
 
         return context
 
